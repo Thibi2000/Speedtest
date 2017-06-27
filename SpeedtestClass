@@ -1,0 +1,54 @@
+#!/usr/bin/python
+import speedtest
+from Logger import CliLogger
+class SpeedtestClass:
+    def __init__(self, logger):
+        self.servers = []
+        self.logger = logger
+        self.speedtest = speedtest.Speedtest()
+        self.init_servers()
+
+
+    def init_servers(self):
+        self.logger.log("Getting Servers...")
+        self.speedtest.get_servers(self.servers)
+        self.logger.log("Getting Best Server...")
+        self.speedtest.get_best_server()
+
+
+    def download(self):
+        self.logger.log("Starting download...")
+        self.speedtest.download()
+        self.logger.log("Downloading finished")
+
+    def upload(self):
+        self.speedtest.upload()
+
+    def get_download_info(self):
+        dic = self.get_results_dict()
+        download = dic['download']
+        download /= 1000000
+        timestamp = dic['timestamp']
+        latency = dic['server']['latency']
+        self.logger.log("download speed: "+str(download)+" Mb/s")
+        self.logger.log("latency: "+str(latency))
+        self.logger.log("timestamp: "+str(timestamp))
+        self.to_csv([timestamp, latency, download])
+        
+    def get_results_dict(self):
+        return self.speedtest.results.dict()
+    def to_csv(self, lijst):
+        fo = open("results.csv", "a")
+        string = ""
+        for s in lijst:
+           string += str(s)+";"
+        fo.write(string+"\n")
+        fo.close()
+        self.logger.log("Written to results.csv")
+        
+
+if __name__ == '__main__':
+    sp = SpeedtestClass(CliLogger())
+    sp.download()
+    sp.get_download_info()
+    

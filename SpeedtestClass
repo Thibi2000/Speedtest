@@ -43,7 +43,7 @@ class SpeedtestClass:
         fo = open(path + "/results.csv", "a")
         string = ""
         for s in lijst:
-           string += str(s)+";"
+           string += str(s)+","
         fo.write(string+"\n")
         fo.close()
         self.logger.log("Written to results.csv")
